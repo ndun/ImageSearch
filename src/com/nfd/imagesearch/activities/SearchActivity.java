@@ -1,10 +1,5 @@
 package com.nfd.imagesearch.activities;
 
-import com.nfd.imagesearch.R;
-import com.nfd.imagesearch.R.id;
-import com.nfd.imagesearch.R.layout;
-import com.nfd.imagesearch.R.menu;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.nfd.imagesearch.R;
+import com.nfd.imagesearch.helpers.GoogleRestClient;
 
 public class SearchActivity extends Activity {
 
@@ -38,6 +38,15 @@ public class SearchActivity extends Activity {
 	public void onSearchClick(View view) {
 		
 		Log.d("TEST - SearchActivity - onSearchClick", etSearchText.getText().toString());
+		RequestParams parms = new RequestParams();
+		parms.put("q", "dog");
+		parms.put("v", "1.0");
+		GoogleRestClient.get("", parms, new AsyncHttpResponseHandler() {
+		    @Override
+		    public void onSuccess(String response) {
+		    	Log.d("TEST - SearchActivity - onSearchClick", response);
+		    }
+		});
 	}
 
 }
