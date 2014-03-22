@@ -25,6 +25,7 @@ public class GoogleImageResultParserUtil {
 	private static final String IMG_URL_KEY = "url";
 	private static final String CURSOR_KEY = "cursor";
 	private static final String MORE_RESULTS_URL_KEY = "moreResultsUrl";
+	private static final String CONTENT_KEY = "content";
 	
 	public GoogleImageResultParserUtil() {
 		
@@ -44,6 +45,7 @@ public class GoogleImageResultParserUtil {
 	public GoogleImageResult readImageObject(JSONObject obj) throws JSONException{
 		GoogleImageResult image = new GoogleImageResult();
 		image.url = obj.getString(IMG_URL_KEY);
+		image.content = obj.getString(CONTENT_KEY);
 		return image;
 	}
 	
@@ -128,35 +130,5 @@ public class GoogleImageResultParserUtil {
 		return image;
 	}
 	
-	public List readDoublesArray(JsonReader reader) throws IOException {
-		List doubles = new ArrayList();
 
-		reader.beginArray();
-		while (reader.hasNext()) {
-			doubles.add(reader.nextDouble());
-		}
-		reader.endArray();
-		return doubles;
-	}
-
-	/*
-	public User readUser(JsonReader reader) throws IOException {
-		String username = null;
-		int followersCount = -1;
-
-		reader.beginObject();
-		while (reader.hasNext()) {
-			String name = reader.nextName();
-			if (name.equals("name")) {
-				username = reader.nextString();
-			} else if (name.equals("followers_count")) {
-				followersCount = reader.nextInt();
-			} else {
-				reader.skipValue();
-			}
-		}
-		reader.endObject();
-		return new User(username, followersCount);
-	}
-*/
 }

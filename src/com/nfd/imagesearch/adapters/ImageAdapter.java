@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nfd.imagesearch.helpers.GoogleImageResult;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -47,20 +48,26 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
     	ImageLoader imageLoader = ImageLoader.getInstance();
         ImageView imageView;
+        TextView tvContent;
         if (convertView == null) {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
             imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
+//            tvContent = new TextView(mContext);
+//            tvContent.setText(text)
         } else {
             imageView = (ImageView) convertView;
+//            tvContent = (TextView) convertView;
         }
 
 //        imageView.setImageResource(mThumbIds[position]);
         String imageUri = images.get(position).url;
         imageLoader.displayImage(imageUri, imageView);
+//        tvContent.setText(position + " : " + images.get(position).content);
         
         return imageView;
+//        return tvContent;
     }
 
     private Integer[] mThumbIds = {

@@ -7,9 +7,11 @@ public class GoogleImageResult implements Serializable{
 	private static final long serialVersionUID = 5313197491336040141L;
 
 	public GoogleImageResult() {
-		
+		url = "PlaceHolder";
+		content = "PlaceHolder";
 	}
 	public String url;
+	public String content;
 /*
  * "GsearchResultClass":"GimageSearch",
 			"width":"200",

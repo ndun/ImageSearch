@@ -36,10 +36,12 @@ public class SearchActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
+		
 		etSearchText = (EditText) findViewById(R.id.etSearchText);
 		
 		gvImageResults = (GridView) findViewById(R.id.gvImageResults);
 		gvImageResults.setAdapter(new ImageAdapter(this));
+		setGridScroll();
     	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext()).build();
     	ImageLoader.getInstance().init(config);
 	}
@@ -52,6 +54,9 @@ public class SearchActivity extends Activity {
 	}
 	
 	public void onSettingsPress(MenuItem mi) {
+	}
+
+	private void setGridScroll() {
 		gvImageResults.setOnScrollListener(new OnScrollListener() {
 			
 			@Override
@@ -66,8 +71,8 @@ public class SearchActivity extends Activity {
 				
 			}
 		});
+
 	}
-	
 	public void onSearchClick(View view) {
 		
 		Log.d("TEST - SearchActivity - onSearchClick", etSearchText.getText().toString());
@@ -78,6 +83,8 @@ public class SearchActivity extends Activity {
 		RequestParams parms = new RequestParams();
 		parms.put("q", etSearchText.getText().toString());
 		parms.put("v", "1.0");
+//		parms.put("start", "8");
+		parms.put("rsz", "8");
 		GoogleRestClient.get("", parms, new AsyncHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(String response) {
