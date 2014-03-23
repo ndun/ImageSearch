@@ -35,7 +35,7 @@ public abstract class EndlessScrollListener implements OnScrollListener {
     // but first we check if we are waiting for the previous load to finish.
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-    	Log.d("TEST - EndlessScrollListener - onScroll", "onScroll called: " + totalItemCount + " - previous count " + previousTotalItemCount + " - first visible item - " + firstVisibleItem + " - visibleItemCount " + visibleItemCount);
+    	Log.d("TEST - EndlessScrollListener - onScroll", "onScroll called: loading - " + loading + " total item count: " + totalItemCount + " - previous count " + previousTotalItemCount + " - first visible item - " + firstVisibleItem + " - visibleItemCount " + visibleItemCount);
         // If the total item count is zero and the previous isn't, assume the
         // list is invalidated and should be reset back to initial state
         if (totalItemCount < previousTotalItemCount) {

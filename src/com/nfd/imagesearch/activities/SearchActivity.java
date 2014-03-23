@@ -99,7 +99,7 @@ public class SearchActivity extends Activity {
 
 	// Append more data into the adapter
     public void customLoadMoreDataFromApi(int offset, int totalItems) {
-
+    	
 //    	if(offset > 7 || totalItems >= 56) {
 //    		Toast.makeText(this, "Search Results Exceeded - pages: " + offset + " - items: " + totalItems, Toast.LENGTH_SHORT).show();
 //    		return;
@@ -142,7 +142,10 @@ public class SearchActivity extends Activity {
 	                // Triggered only when new data needs to be appended to the list
 	                // Add whatever code is needed to append new items to your AdapterView
 	           	Log.d("TEST - SearchActivity - customLoadMoreDataFromApi", page + " total items: " + totalItemsCount);
-
+	           	if(totalItemsCount >= 64) {
+	           		Toast.makeText(getApplicationContext(), "Max results retrieved", Toast.LENGTH_SHORT).show();
+	           		return;
+	           	}
 	        	customLoadMoreDataFromApi(page, totalItemsCount); 
 	                // or customLoadMoreDataFromApi(totalItemsCount); 
 	        }
@@ -155,6 +158,8 @@ public class SearchActivity extends Activity {
 			Toast.makeText(this, "Please enter search criteria.", Toast.LENGTH_SHORT).show();
 			return;
 		}
+		//Reset grid scroll after clicking new search
+		imageResults.clear();
 		RequestParams parms = new RequestParams();
 		parms.put("q", etSearchText.getText().toString());
 		parms.put("v", "1.0");
@@ -169,7 +174,7 @@ public class SearchActivity extends Activity {
 		    	JSONArray imageJsonResults = null;
 		    	try {
 		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);
-		    		imageResults.clear();
+		    		
 //		    		imageResults.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
 		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
 		    		moreResultsUrl = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONObject("cursor").getString("moreResultsUrl");
