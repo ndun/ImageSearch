@@ -44,7 +44,7 @@ public class GoogleImageResultParserUtil {
 	
 	public GoogleImageResult readImageObject(JSONObject obj) throws JSONException{
 		GoogleImageResult image = new GoogleImageResult();
-		image.url = obj.getString(IMG_URL_KEY);
+		image.fullUrl = obj.getString(IMG_URL_KEY);
 		image.content = obj.getString(CONTENT_KEY);
 		return image;
 	}
@@ -121,7 +121,7 @@ public class GoogleImageResultParserUtil {
 		while (reader.hasNext()) {
 			String name = reader.nextName();
 			if (name.equals(IMG_URL_KEY)) {
-				image.url = reader.nextString();
+				image.fullUrl = reader.nextString();
 			} else {
 				reader.skipValue();
 			}
