@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,22 +28,28 @@ import com.nfd.imagesearch.helpers.EndlessScrollListener;
 import com.nfd.imagesearch.helpers.GoogleImageResult;
 import com.nfd.imagesearch.helpers.GoogleRestClient;
 import com.nfd.imagesearch.helpers.ImageResultArrayAdapter;
+import com.nfd.imagesearch.models.Settings;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class SearchActivity extends Activity {
-
+	public static final int SETTINGS_REQUEST = 123;
+	public static final String IMAGE_SIZE_EXTRA = "imageSize";
+	
+	
 	EditText etSearchText;
 	GridView gvImageResults;
 	List<GoogleImageResult> imageResults = new ArrayList<GoogleImageResult>();
 //	ImageAdapter imageAdapter;
 	ImageResultArrayAdapter imageAdapter;
+	Settings settings;
 	String moreResultsUrl = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
+		settings = new Settings();
 		setupViews();		
 		imageAdapter = new ImageResultArrayAdapter(this, imageResults); //new ImageAdapter(this, imageResults);//
 		gvImageResults.setAdapter(imageAdapter);
@@ -65,7 +72,29 @@ public class SearchActivity extends Activity {
 		return true;
 	}
 	
+
+	
 	public void onSettingsPress(MenuItem mi) {
+		Toast.makeText(this, "Settings launched", Toast.LENGTH_SHORT).show();
+		Intent i = new Intent(this, SearchSettingsActivity.class);
+		i.putExtra(IMAGE_SIZE_EXTRA, settings);
+//		i.putExtra(FOO_EXTRA, "bar");
+//		i.putExtra(GOO_EXTRA, "baz");
+//		i.putExtra(SETTINGS_EXTRA, settings);
+		// Expecting activity to come back
+		startActivityForResult(i, 123);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		if(requestCode == SETTINGS_REQUEST) {
+			if(resultCode == RESULT_OK) {
+				settings = (Settings) data.getSerializableExtra(IMAGE_SIZE_EXTRA);
+				Toast.makeText(this, settings.toString(), Toast.LENGTH_SHORT).show();
+			}
+		}
+
 	}
 
 	// Append more data into the adapter
@@ -92,14 +121,10 @@ public class SearchActivity extends Activity {
 		    @Override
 		    public void onSuccess(JSONObject response) {
 		    	Log.d("TEST - SearchActivity - customload api", response.toString());
-//		    	GoogleImageResultParserUtil parser = new GoogleImageResultParserUtil();
 		    	JSONArray imageJsonResults = null;
 		    	try {
-		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);
-		    		
-//		    		imageResults.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
+		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);		    	
 		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
-//		    		imageAdapter.notify();
 		    		moreResultsUrl = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONObject("cursor").getString("moreResultsUrl");
 		    		Log.d("TEST - SearchActivity - onSearchClick", "images: " + imageResults.size());
 
@@ -123,6 +148,7 @@ public class SearchActivity extends Activity {
 	        }
 	        });
 	}
+	
 	public void onSearchClick(View view) {		
 		Log.d("TEST - SearchActivity - onSearchClick", etSearchText.getText().toString());
 		if(etSearchText.getText() == null || etSearchText.getText().toString().length() == 0) {
