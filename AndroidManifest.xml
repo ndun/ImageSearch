@@ -29,6 +29,10 @@
             android:name="com.nfd.imagesearch.activities.SearchSettingsActivity"
             android:label="@string/title_activity_search_settings" >
         </activity>
+        <activity
+            android:name="com.nfd.imagesearch.activities.ImageDisplayActivity"
+            android:label="@string/title_activity_image_display" >
+        </activity>
     </application>
 
 </manifest>

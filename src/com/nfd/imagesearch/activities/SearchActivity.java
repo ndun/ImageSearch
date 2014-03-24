@@ -15,11 +15,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nfd.imagesearch.R;
@@ -34,15 +35,15 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class SearchActivity extends Activity {
 	public static final int SETTINGS_REQUEST = 123;
+	public static final int DISPLAY_IMAGE_REQUEST = 890;
 	public static final String SETTINGS_EXTRA = "settings";
-	
+	public static final String IMAGE_EXTRA = "image";
 	
 	EditText etSearchText;
 	GridView gvImageResults;
 	List<GoogleImageResult> imageResults = new ArrayList<GoogleImageResult>();
 	ImageResultArrayAdapter imageAdapter;
 	Settings settings;
-	String moreResultsUrl = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +51,11 @@ public class SearchActivity extends Activity {
 		setContentView(R.layout.activity_search);
 		settings = new Settings();
 		setupViews();		
-		imageAdapter = new ImageResultArrayAdapter(this, imageResults); //new ImageAdapter(this, imageResults);//
+		imageAdapter = new ImageResultArrayAdapter(this, imageResults); 
 		gvImageResults.setAdapter(imageAdapter);
-//		images = new ArrayList<GoogleImageResult>();
-		setGridScroll();
+		
+		setGridViewListeners();
+		
     	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext()).build();
     	ImageLoader.getInstance().init(config);
 	}
@@ -77,9 +79,7 @@ public class SearchActivity extends Activity {
 		Toast.makeText(this, "Settings launched", Toast.LENGTH_SHORT).show();
 		Intent i = new Intent(this, SearchSettingsActivity.class);
 		i.putExtra(SETTINGS_EXTRA, settings);
-
-		// Expecting activity to come back
-		startActivityForResult(i, 123);
+		startActivityForResult(i, SETTINGS_REQUEST);
 	}
 	
 	@Override
@@ -90,31 +90,24 @@ public class SearchActivity extends Activity {
 				settings = (Settings) data.getSerializableExtra(SETTINGS_EXTRA);
 				Toast.makeText(this, settings.toString(), Toast.LENGTH_SHORT).show();
 			}
+		} else if(requestCode == DISPLAY_IMAGE_REQUEST) {
+			if(resultCode == RESULT_OK) {
+				
+			}
 		}
 
 	}
 
 	// Append more data into the adapter
     public void customLoadMoreDataFromApi(int offset, int totalItems) {
-    	
-//    	if(offset > 7 || totalItems >= 56) {
-//    		Toast.makeText(this, "Search Results Exceeded - pages: " + offset + " - items: " + totalItems, Toast.LENGTH_SHORT).show();
-//    		return;
-//    	}
       // This method probably sends out a network request and appends new data items to your adapter. 
       // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
       // Deserialize API response and then construct new objects to append to the adapter
     	Log.d("TEST - SearchActivity - customLoadMoreDataFromApi", "offset: " + totalItems);
-		RequestParams parms = new RequestParams();
-		AsyncHttpClient client = new AsyncHttpClient();
+
 		String params = "?v=1.0&start=" + totalItems + formatQueryParameters() + "&rsz=8&q=" + Uri.encode(etSearchText.getText().toString()) ;
-//		parms.put("q", etSearchText.getText().toString());
-//		parms.put("v", "1.0");
-//		parms.put("start", totalItems);
-//		parms.put("rsz", "8");
-//		moreResultsUrl = response.getJSONObject("cursor").getString("moreResultsUrl");
 		
-		GoogleRestClient.get(params, parms, new JsonHttpResponseHandler() {
+		GoogleRestClient.get(params, new RequestParams(), new JsonHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(JSONObject response) {
 		    	Log.d("TEST - SearchActivity - customload api", response.toString());
@@ -122,17 +115,16 @@ public class SearchActivity extends Activity {
 		    	try {
 		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);		    	
 		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
-		    		moreResultsUrl = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONObject("cursor").getString("moreResultsUrl");
 		    		Log.d("TEST - SearchActivity - onSearchClick", "images: " + imageResults.size());
 
-		    	}catch(JSONException e) {
+		    	} catch(JSONException e) {
 		    		e.printStackTrace();
 		    	}
 		    }
 		});
     }
 
-	private void setGridScroll() {
+	private void setGridViewListeners() {
 		gvImageResults.setOnScrollListener(new EndlessScrollListener() {
 	        @Override
 	        public void onLoadMore(int page, int totalItemsCount) {
@@ -144,9 +136,19 @@ public class SearchActivity extends Activity {
 	           		return;
 	           	}
 	        	customLoadMoreDataFromApi(page, totalItemsCount); 
-	                // or customLoadMoreDataFromApi(totalItemsCount); 
 	        }
 	        });
+
+		gvImageResults.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+				// TODO Auto-generated method stub
+				Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
+				GoogleImageResult image = imageAdapter.getItem(pos);
+				i.putExtra(IMAGE_EXTRA, image);
+				startActivity(i);//, SearchActivity.DISPLAY_IMAGE_REQUEST);				
+			}
+		});
 	}
 	
 	public void onSearchClick(View view) {		
@@ -155,14 +157,10 @@ public class SearchActivity extends Activity {
 			Toast.makeText(this, "Please enter search criteria.", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		//Reset grid scroll after clicking new search
+
 		imageAdapter.clear();
-		RequestParams parms = setQueryParameters();//new RequestParams();
-		/*
-		parms.put("q", etSearchText.getText().toString());
-		parms.put("v", "1.0");
-		parms.put("start", "0");
-		parms.put("rsz", "8");*/
+		RequestParams parms = setQueryParameters();
+
 		GoogleRestClient.get("", parms, new JsonHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(JSONObject response) {
@@ -171,10 +169,7 @@ public class SearchActivity extends Activity {
 		    	JSONArray imageJsonResults = null;
 		    	try {
 		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);
-		    		
-//		    		imageResults.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
-		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
-		    		moreResultsUrl = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONObject("cursor").getString("moreResultsUrl");
+		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));
 		    		Log.d("TEST - SearchActivity - onSearchClick", "images: " + imageResults.size());
 		    	}catch(JSONException e) {
 		    		e.printStackTrace();
