@@ -34,13 +34,12 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class SearchActivity extends Activity {
 	public static final int SETTINGS_REQUEST = 123;
-	public static final String IMAGE_SIZE_EXTRA = "imageSize";
+	public static final String SETTINGS_EXTRA = "settings";
 	
 	
 	EditText etSearchText;
 	GridView gvImageResults;
 	List<GoogleImageResult> imageResults = new ArrayList<GoogleImageResult>();
-//	ImageAdapter imageAdapter;
 	ImageResultArrayAdapter imageAdapter;
 	Settings settings;
 	String moreResultsUrl = "";
@@ -77,10 +76,8 @@ public class SearchActivity extends Activity {
 	public void onSettingsPress(MenuItem mi) {
 		Toast.makeText(this, "Settings launched", Toast.LENGTH_SHORT).show();
 		Intent i = new Intent(this, SearchSettingsActivity.class);
-		i.putExtra(IMAGE_SIZE_EXTRA, settings);
-//		i.putExtra(FOO_EXTRA, "bar");
-//		i.putExtra(GOO_EXTRA, "baz");
-//		i.putExtra(SETTINGS_EXTRA, settings);
+		i.putExtra(SETTINGS_EXTRA, settings);
+
 		// Expecting activity to come back
 		startActivityForResult(i, 123);
 	}
@@ -90,7 +87,7 @@ public class SearchActivity extends Activity {
 		// TODO Auto-generated method stub
 		if(requestCode == SETTINGS_REQUEST) {
 			if(resultCode == RESULT_OK) {
-				settings = (Settings) data.getSerializableExtra(IMAGE_SIZE_EXTRA);
+				settings = (Settings) data.getSerializableExtra(SETTINGS_EXTRA);
 				Toast.makeText(this, settings.toString(), Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -110,7 +107,7 @@ public class SearchActivity extends Activity {
     	Log.d("TEST - SearchActivity - customLoadMoreDataFromApi", "offset: " + totalItems);
 		RequestParams parms = new RequestParams();
 		AsyncHttpClient client = new AsyncHttpClient();
-		String params = "?v=1.0&start=" + totalItems + "&rsz=8&q=" + Uri.encode(etSearchText.getText().toString()) ;
+		String params = "?v=1.0&start=" + totalItems + formatQueryParameters() + "&rsz=8&q=" + Uri.encode(etSearchText.getText().toString()) ;
 //		parms.put("q", etSearchText.getText().toString());
 //		parms.put("v", "1.0");
 //		parms.put("start", totalItems);
@@ -160,11 +157,12 @@ public class SearchActivity extends Activity {
 		}
 		//Reset grid scroll after clicking new search
 		imageResults.clear();
-		RequestParams parms = new RequestParams();
+		RequestParams parms = setQueryParameters();//new RequestParams();
+		/*
 		parms.put("q", etSearchText.getText().toString());
 		parms.put("v", "1.0");
 		parms.put("start", "0");
-		parms.put("rsz", "8");
+		parms.put("rsz", "8");*/
 		GoogleRestClient.get("", parms, new JsonHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(JSONObject response) {
@@ -184,6 +182,63 @@ public class SearchActivity extends Activity {
 		    	}
 		    }
 		});		
+	}
+	
+	private RequestParams setQueryParameters() {
+		RequestParams parms = new RequestParams();
+		parms.put("q", etSearchText.getText().toString());
+		parms.put("v", "1.0");
+		parms.put("start", "0");
+		parms.put("rsz", "8");
+		if(settings == null) {
+			return parms;
+		}
+
+		String imageColor = settings.getImageColor();
+		if(imageColor != null && imageColor.length() > 0) {
+			parms.put("imgcolor", imageColor);
+		}
+		String imageSize = settings.getImageSize();
+		if(imageSize != null && imageSize.length() > 0) {
+			parms.put("imgsz", imageSize);
+		}
+		
+		String imageType = settings.getImageType();
+		if(imageType != null && imageType.length() > 0) {
+			parms.put("imgtype", imageType);
+		}
+		
+		String searchSite = settings.getSearchSite();
+		if(searchSite != null && searchSite.length() > 0) {
+			parms.put("as_sitesearch", searchSite);
+		}
+		return parms;
+	}
+	
+	private String formatQueryParameters() {
+		if(settings == null) {
+			return "";
+		}
+		StringBuilder parameters = new StringBuilder();
+		String imageColor = settings.getImageColor();
+		if(imageColor != null && imageColor.length() > 0) {
+			parameters.append("&imgcolor=" + imageColor);
+		}
+		String imageSize = settings.getImageSize();
+		if(imageSize != null && imageSize.length() > 0) {
+			parameters.append("&imgsz=" + imageSize);
+		}
+		
+		String imageType = settings.getImageType();
+		if(imageType != null && imageType.length() > 0) {
+			parameters.append("&imgtype=" + imageType);
+		}
+		
+		String searchSite = settings.getSearchSite();
+		if(searchSite != null && searchSite.length() > 0) {
+			parameters.append("&as_sitesearch=" + Uri.encode(searchSite));
+		}
+		return parameters.toString();
 	}
 
 }

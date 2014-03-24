@@ -38,7 +38,7 @@ public class SearchSettingsActivity extends Activity {
 		setupSpinnerListeners();
 		
 		Intent intent = getIntent();
-		settings = (Settings) intent.getSerializableExtra(SearchActivity.IMAGE_SIZE_EXTRA);
+		settings = (Settings) intent.getSerializableExtra(SearchActivity.SETTINGS_EXTRA);
 		populateSettings();
 	}
 	
@@ -48,7 +48,7 @@ public class SearchSettingsActivity extends Activity {
 
 		spinnerImageColor.setSelection(colors.indexOf(settings.getImageColor()));
 
-
+		etSearchSite.setText(settings.getSearchSite());
 	}
 	
 	private void setupViews() {
@@ -118,7 +118,7 @@ public class SearchSettingsActivity extends Activity {
 		Intent data = new Intent();
 		Log.d("DEBUG", "save settings: " + settings.toString());
 		
-		data.putExtra(SearchActivity.IMAGE_SIZE_EXTRA, settings);
+		data.putExtra(SearchActivity.SETTINGS_EXTRA, settings);
 		setResult(RESULT_OK, data);
 		// Close the screen and go back
 		finish();
