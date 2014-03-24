@@ -156,7 +156,7 @@ public class SearchActivity extends Activity {
 			return;
 		}
 		//Reset grid scroll after clicking new search
-		imageResults.clear();
+		imageAdapter.clear();
 		RequestParams parms = setQueryParameters();//new RequestParams();
 		/*
 		parms.put("q", etSearchText.getText().toString());
@@ -167,7 +167,6 @@ public class SearchActivity extends Activity {
 		    @Override
 		    public void onSuccess(JSONObject response) {
 		    	Log.d("TEST - SearchActivity - onSearchClick", response.toString());
-//		    	GoogleImageResultParserUtil parser = new GoogleImageResultParserUtil();
 		    	
 		    	JSONArray imageJsonResults = null;
 		    	try {
