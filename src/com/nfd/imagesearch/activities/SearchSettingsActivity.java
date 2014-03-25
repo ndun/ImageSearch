@@ -129,16 +129,15 @@ public class SearchSettingsActivity extends Activity {
 		Intent data = new Intent();
 		Log.d("DEBUG", "save settings: " + settings.toString());
 		
+		// Write settings to file
 		File filesDir = getFilesDir();
 	    File todoFile = new File(filesDir, Settings.SETTINGS_FILE);
 	    try {
-
 	    	FileUtils.write(todoFile, settings.convertToJson());
 	    } catch(IOException e) {
 	    	e.printStackTrace();
 	    }
 
-		
 		data.putExtra(SearchActivity.SETTINGS_EXTRA, settings);
 		setResult(RESULT_OK, data);
 		// Close the screen and go back

@@ -1,10 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
      <item
         android:id="@+id/miSettings"
         android:icon="@drawable/ic_gear"
         android:onClick="onSettingsPress"
         android:showAsAction="always"
-        android:title="Settings"></item>
-
+        android:title="@string/search_menu_settings_title"></item>
 </menu>

@@ -10,7 +10,9 @@
     <string name="image_type_filter">Image Type</string>
     <string name="image_color_filter">Color</string>
     <string name="search_site_filter">Search Site</string>
-
+	<string name="image_display_share_title">Share</string>
+	<string name="search_menu_settings_title">Settings</string>
+    
     <string-array name="image_size_filter_array">
         <item></item>
         <item>small</item>

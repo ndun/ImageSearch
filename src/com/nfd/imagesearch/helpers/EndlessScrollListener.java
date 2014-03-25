@@ -46,14 +46,6 @@ public abstract class EndlessScrollListener implements OnScrollListener {
             if (totalItemCount == 0) { this.loading = true; } 
         }
         
-        
-        
-        //NFD added to check when previous total item count = total item count
-//        if(totalItemCount == previousTotalItemCount && (totalItemCount - visibleItemCount)<=(firstVisibleItem + visibleThreshold)) {
-//        	loading = false;
-//        }
-        
-        
         // If it’s still loading, we check to see if the dataset count has
         // changed, if so we conclude it has finished loading and update the current page
         // number and total item count.

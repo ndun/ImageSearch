@@ -84,7 +84,6 @@ public class Settings implements Serializable {
 	}
 
 	public String toString() {
-		return "Size: " + imageSize + " - Color: " + imageColor + " - Type: "
-				+ imageType + " - site: " + searchSite;
+		return "Size: " + imageSize + " - Color: " + imageColor + " - Type: " + imageType + " - site: " + searchSite;
 	}
 }

@@ -25,7 +25,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
@@ -64,9 +63,8 @@ public class ImageDisplayActivity extends Activity {
 	}
 
 	private void setupViews() {
-		Intent i = getIntent();
-		image = (GoogleImageResult) i
-				.getSerializableExtra(SearchActivity.IMAGE_EXTRA);
+
+		image = (GoogleImageResult) getIntent().getSerializableExtra(SearchActivity.IMAGE_EXTRA);
 
 		ivResult = (SmartImageView) findViewById(R.id.ivResult);
 		ivResult.setImageUrl(image.getFullUrl());
@@ -76,88 +74,66 @@ public class ImageDisplayActivity extends Activity {
 	}
 
 	public void onLinkClick(View view) {
-		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(image
-				.getContextUrl()));
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(image.getContextUrl()));
 		startActivity(browserIntent);
 	}
 
 	public void setupShareAction() {
-		// Fetch Bitmap Uri locally
-		SmartImageView ivImage = (SmartImageView) findViewById(R.id.ivResult);
-		getLocalBitmapUri(ivImage); // see previous section
-	}
-
-	public void getLocalBitmapUri(ImageView imageView) {
 		Bitmap bitmap;
-		if (imageView.getDrawable() instanceof BitmapDrawable) {
-			bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-			Intent shareIntent = new Intent();
-			shareIntent.setAction(Intent.ACTION_SEND);
-			shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-			shareIntent.setType("image/*");
-			// Attach share event to the menu item provider
-			miShareAction.setShareIntent(shareIntent);
-
-			// Write image to default external storage directory
-			bmpUri = null;
-			try {
-				File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "share_image.png");
-				FileOutputStream out = new FileOutputStream(file);
-				bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-				out.close();
-				bmpUri = Uri.fromFile(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		if (ivResult.getDrawable() instanceof BitmapDrawable) {
+			bitmap = ((BitmapDrawable) ivResult.getDrawable()).getBitmap();
+			writeImageToExternalStorage(bitmap);
 		} else {
+			// Need to retrieve bitmap for Color Drawable
 			new retrieveBitMapTask().execute(image.getFullUrl());
 		}
+	}
+	
+	protected void writeImageToExternalStorage(Bitmap bitmap) {
+		// Write image to default external storage directory
+		try {
+			File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+			dir.mkdirs();
+			File file = new File(dir, "share_image.png");
+			FileOutputStream out = new FileOutputStream(file);
+			bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+			out.close();
+			bmpUri = Uri.fromFile(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Attach share event to the menu item provider
+		Intent shareIntent = new Intent();
+		shareIntent.setAction(Intent.ACTION_SEND);
+		shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+		shareIntent.setType("image/*");
+
+		miShareAction.setShareIntent(shareIntent);
+		
 	}
 
 	private class retrieveBitMapTask extends AsyncTask<String, Void, Bitmap> {
 
-		private Exception exception;
-
+		// Cannot use network capabilities on main thread, so need to retrieve image in background
 		protected Bitmap doInBackground(String... arg0) {
 			try {
-				HttpGet httpRequest = new HttpGet(
-						URI.create(image.getFullUrl()));
+				HttpGet httpRequest = new HttpGet(URI.create(image.getFullUrl()));
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpResponse response = (HttpResponse) httpclient
-						.execute(httpRequest);
+				HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
 				HttpEntity entity = response.getEntity();
-				BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(
-						entity);
-				Bitmap bitmap = BitmapFactory.decodeStream(bufHttpEntity
-						.getContent());
-
+				BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
+				Bitmap bitmap = BitmapFactory.decodeStream(bufHttpEntity.getContent());
 				return bitmap;
 			} catch (Exception e) {
-				this.exception = e;
 				e.printStackTrace();
 				return null;
 			}
 		}
 
 		protected void onPostExecute(Bitmap bitmap) {
-			try {
-				File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-				dir.mkdirs();
-				File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "share_image.png");
-				FileOutputStream out = new FileOutputStream(file);
-				bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-				out.close();
-				bmpUri = Uri.fromFile(file);
-				Intent shareIntent = new Intent();
-				shareIntent.setAction(Intent.ACTION_SEND);
-				shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-				shareIntent.setType("image/*");
-				// Attach share event to the menu item provider
-				miShareAction.setShareIntent(shareIntent);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// write to storage after image is fetched
+			writeImageToExternalStorage(bitmap);
 		}
-
 	}
 }

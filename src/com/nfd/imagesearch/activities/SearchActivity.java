@@ -98,7 +98,6 @@ public class SearchActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		if(requestCode == SETTINGS_REQUEST) {
 			if(resultCode == RESULT_OK) {
 				settings = (Settings) data.getSerializableExtra(SETTINGS_EXTRA);
@@ -120,7 +119,6 @@ public class SearchActivity extends Activity {
 		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);		    	
 		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));
 		    		Log.d("TEST - SearchActivity - onSearchClick", "images: " + imageResults.size());
-
 		    	} catch(JSONException e) {
 		    		e.printStackTrace();
 		    	}
@@ -148,7 +146,7 @@ public class SearchActivity extends Activity {
 				Intent i = new Intent(getBaseContext(), ImageDisplayActivity.class);
 				GoogleImageResult image = imageAdapter.getItem(pos);
 				i.putExtra(IMAGE_EXTRA, image);
-				startActivity(i);//, SearchActivity.DISPLAY_IMAGE_REQUEST);				
+				startActivity(i);	
 			}
 		});
 	}
