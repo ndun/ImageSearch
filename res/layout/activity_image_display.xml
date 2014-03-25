@@ -8,13 +8,54 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ImageDisplayActivity" >
 
+    <!--
+    <TableLayout
+        android:id="@+id/tblLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:shrinkColumns="*"
+        android:stretchColumns="*" >
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal" >
+
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/tvText1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="text 1" />
+        </TableRow>
+    </TableLayout-->
+    
+
     <com.loopj.android.image.SmartImageView
         android:id="@+id/ivResult"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:maxHeight="200dp"
+        android:maxWidth="200dp"
+        android:src="@android:drawable/screen_background_light_transparent" />
+
+    <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:maxWidth="600dp" 
-        android:src="@android:drawable/screen_background_light_transparent"/>
+        android:layout_alignBottom="@+id/ivResult"
+        android:layout_alignLeft="@+id/ivResult"
+        android:layout_alignRight="@+id/ivResult"
+        android:layout_alignTop="@+id/ivResult"
+        android:layout_margin="1dp"
+        android:clickable="true"
+        android:gravity="top"
+        android:onClick="onLinkClick"
+        android:text="Image"
+        android:textColor="#000000" />
 
 </RelativeLayout>

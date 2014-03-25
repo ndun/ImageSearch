@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.net.Uri;
+
 public class GoogleImageResult implements Serializable{
 	
 	public static final String RESPONSE_DATA_KEY = "responseData";

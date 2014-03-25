@@ -95,14 +95,9 @@ public class SearchActivity extends Activity {
 				
 			}
 		}
-
 	}
 
-	// Append more data into the adapter
     public void customLoadMoreDataFromApi(int offset, int totalItems) {
-      // This method probably sends out a network request and appends new data items to your adapter. 
-      // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
-      // Deserialize API response and then construct new objects to append to the adapter
     	Log.d("TEST - SearchActivity - customLoadMoreDataFromApi", "offset: " + totalItems);
 
 		String params = "?v=1.0&start=" + totalItems + formatQueryParameters() + "&rsz=8&q=" + Uri.encode(etSearchText.getText().toString()) ;
@@ -175,6 +170,11 @@ public class SearchActivity extends Activity {
 		    		e.printStackTrace();
 		    	}
 		    }
+		    public void onFailure(int statusCode, java.lang.Throwable e, org.json.JSONArray errorResponse) {
+		    	Log.d("TEST - Failed in sending request", statusCode + " response: " + errorResponse);
+		    	e.printStackTrace();
+		    }
+
 		});		
 	}
 	
