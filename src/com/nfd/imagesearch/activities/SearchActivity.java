@@ -1,8 +1,11 @@
 package com.nfd.imagesearch.activities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +52,7 @@ public class SearchActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
-		settings = new Settings();
+		loadSettings();
 		setupViews();		
 		imageAdapter = new ImageResultArrayAdapter(this, imageResults); 
 		gvImageResults.setAdapter(imageAdapter);
@@ -73,7 +76,18 @@ public class SearchActivity extends Activity {
 		return true;
 	}
 	
-
+	private void loadSettings() {
+    	File filesDir = getFilesDir();		
+    	File settingsFile = new File(filesDir, Settings.SETTINGS_FILE);
+    	try {
+    		String jsonString = FileUtils.readFileToString(settingsFile);
+    		settings = new Settings(jsonString);
+    	} catch(IOException e) {
+    		settings = new Settings();
+    		e.printStackTrace();
+    	}
+	}
+	
 	
 	public void onSettingsPress(MenuItem mi) {
 		Toast.makeText(this, "Settings launched", Toast.LENGTH_SHORT).show();
@@ -88,13 +102,8 @@ public class SearchActivity extends Activity {
 		if(requestCode == SETTINGS_REQUEST) {
 			if(resultCode == RESULT_OK) {
 				settings = (Settings) data.getSerializableExtra(SETTINGS_EXTRA);
-				Toast.makeText(this, settings.toString(), Toast.LENGTH_SHORT).show();
 			}
-		} else if(requestCode == DISPLAY_IMAGE_REQUEST) {
-			if(resultCode == RESULT_OK) {
-				
-			}
-		}
+		} 
 	}
 
     public void customLoadMoreDataFromApi(int offset, int totalItems) {
@@ -109,7 +118,7 @@ public class SearchActivity extends Activity {
 		    	JSONArray imageJsonResults = null;
 		    	try {
 		    		imageJsonResults = response.getJSONObject(GoogleImageResult.RESPONSE_DATA_KEY).getJSONArray(GoogleImageResult.RESULTS_KEY);		    	
-		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));//parser.readImageResults(obj);
+		    		imageAdapter.addAll(GoogleImageResult.fromJSONArray(imageJsonResults));
 		    		Log.d("TEST - SearchActivity - onSearchClick", "images: " + imageResults.size());
 
 		    	} catch(JSONException e) {
@@ -123,8 +132,6 @@ public class SearchActivity extends Activity {
 		gvImageResults.setOnScrollListener(new EndlessScrollListener() {
 	        @Override
 	        public void onLoadMore(int page, int totalItemsCount) {
-	                // Triggered only when new data needs to be appended to the list
-	                // Add whatever code is needed to append new items to your AdapterView
 	           	Log.d("TEST - SearchActivity - customLoadMoreDataFromApi", page + " total items: " + totalItemsCount);
 	           	if(totalItemsCount >= 64) {
 	           		Toast.makeText(getBaseContext(), "Max results retrieved", Toast.LENGTH_SHORT).show();

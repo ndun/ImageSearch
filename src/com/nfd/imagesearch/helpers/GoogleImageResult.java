@@ -4,11 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.net.Uri;
 
 public class GoogleImageResult implements Serializable{
 	
@@ -40,7 +39,7 @@ public class GoogleImageResult implements Serializable{
 			content = jsonObject.getString(CONTENT_KEY);
 			thumbUrl = jsonObject.getString(THUMB_URL_KEY);
 			contextUrl = jsonObject.getString(CONTEXT_URL);
-			title = jsonObject.getString(TITLE);
+			title = StringEscapeUtils.unescapeHtml4(jsonObject.getString(TITLE));
 		} catch(JSONException e) {
 			e.printStackTrace();
 		}
@@ -65,26 +64,7 @@ public class GoogleImageResult implements Serializable{
 	public String toString() {
 		return thumbUrl;
 	}
-	
-
-/*
- * "GsearchResultClass":"GimageSearch",
-			"width":"200",
-			"height":"200",
-			"imageId":"ANd9GcRwoH362kEP74tLKIiDkXKUVOjcCSvyJj-YGwwsm18YwBMaj1US9KrYPeE",
-			"tbWidth":"104",
-			"tbHeight":"104",
-			"unescapedUrl":"http://rs1097.pbsrc.com/albums/g356/russelldempsey/Blues%20Leed%20Mascot/261020111011.jpg~c200",
-			"url":"http://rs1097.pbsrc.com/albums/g356/russelldempsey/Blues%2520Leeds%2520Mascot/261020111011.jpg~c200",
-			"visibleUrl":"photobucket.com",
-			"title":"Blues Lounge Pictures, Images \u0026amp; Photos | Photobucket",
-			"titleNoFormatting":"Blues Lounge Pictures, Images \u0026amp; Photos | Photobucket",
-			"originalContextUrl":"http://photobucket.com/images/blues%20lounge",
-			"content":"blues lounge photo: Mascot Lounge 261020111011.jpg",
-			"contentNoFormatting":"blues lounge photo: Mascot Lounge 261020111011.jpg",
-			"tbUrl":"http://t3.gstatic.com/images?q\u003dtbn:ANd9GcRwoH362kEP74tLKIiDkXKUVOjcCSvyJj-YGwwsm18YwBMaj1US9KrYPeE"	
- */
-	
+		
 	public static final List<GoogleImageResult> fromJSONArray(JSONArray imageResults) {
 		List<GoogleImageResult> images = new ArrayList<GoogleImageResult>();
 		try {

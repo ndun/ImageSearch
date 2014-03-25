@@ -19,8 +19,6 @@ public class ImageResultArrayAdapter extends ArrayAdapter<GoogleImageResult> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-//		return super.getView(position, convertView, parent);
 		GoogleImageResult imageInfo = this.getItem(position);
 		SmartImageView ivImage;
 		if(convertView == null) {

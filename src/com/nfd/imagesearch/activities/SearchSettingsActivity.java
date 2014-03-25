@@ -1,7 +1,11 @@
 package com.nfd.imagesearch.activities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,12 +45,19 @@ public class SearchSettingsActivity extends Activity {
 		settings = (Settings) intent.getSerializableExtra(SearchActivity.SETTINGS_EXTRA);
 		populateSettings();
 	}
+
 	
 	private void populateSettings() {
 		String [] colorArray = getResources().getStringArray(R.array.image_color_filter_array);
 		List<String> colors = Arrays.asList(colorArray);
-
+		String [] sizeArray = getResources().getStringArray(R.array.image_size_filter_array);
+		List<String> sizes = Arrays.asList(sizeArray);
+		String [] typeArray = getResources().getStringArray(R.array.image_type_filter_array);
+		List<String> types = Arrays.asList(typeArray);
+		
+		spinnerImageSize.setSelection(sizes.indexOf(settings.getImageSize()));
 		spinnerImageColor.setSelection(colors.indexOf(settings.getImageColor()));
+		spinnerImageType.setSelection(types.indexOf(settings.getImageType()));
 
 		etSearchSite.setText(settings.getSearchSite());
 	}
@@ -117,6 +128,16 @@ public class SearchSettingsActivity extends Activity {
 		settings.setSearchSite(etSearchSite.getText().toString());
 		Intent data = new Intent();
 		Log.d("DEBUG", "save settings: " + settings.toString());
+		
+		File filesDir = getFilesDir();
+	    File todoFile = new File(filesDir, Settings.SETTINGS_FILE);
+	    try {
+
+	    	FileUtils.write(todoFile, settings.convertToJson());
+	    } catch(IOException e) {
+	    	e.printStackTrace();
+	    }
+
 		
 		data.putExtra(SearchActivity.SETTINGS_EXTRA, settings);
 		setResult(RESULT_OK, data);
