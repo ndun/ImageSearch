@@ -41,6 +41,6 @@
         <item>lineart</item>
     </string-array>
 
-    <string name="title_activity_image_display">ImageDisplayActivity</string>
+    <string name="title_activity_image_display">Image</string>
 
 </resources>

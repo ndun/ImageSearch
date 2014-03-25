@@ -18,16 +18,18 @@ public class GoogleImageResult implements Serializable{
 	public static final String CURSOR_KEY = "cursor";
 	public static final String MORE_RESULTS_URL_KEY = "moreResultsUrl";
 	public static final String CONTENT_KEY = "content";
-
+	public static final String CONTEXT_URL = "originalContextUrl";
+	public static final String TITLE = "titleNoFormatting";
+	
 	private static final long serialVersionUID = 5313197491336040141L;
 
-	public String fullUrl;
-	public String thumbUrl;
-	public String content;
+	private String fullUrl;
+	private String thumbUrl;
+	private String content;
+	private String title;
+	private String contextUrl;
 	
 	public GoogleImageResult() {
-		fullUrl = "PlaceHolder";
-		content = "PlaceHolder";
 	}
 	
 	public GoogleImageResult(JSONObject jsonObject) {
@@ -35,6 +37,8 @@ public class GoogleImageResult implements Serializable{
 			fullUrl = jsonObject.getString(IMG_URL_KEY);
 			content = jsonObject.getString(CONTENT_KEY);
 			thumbUrl = jsonObject.getString(THUMB_URL_KEY);
+			contextUrl = jsonObject.getString(CONTEXT_URL);
+			title = jsonObject.getString(TITLE);
 		} catch(JSONException e) {
 			e.printStackTrace();
 		}
@@ -48,9 +52,19 @@ public class GoogleImageResult implements Serializable{
 		return thumbUrl;
 	}
 	
+	public String getTitle() {
+		return title;
+	}
+	
+	public String getContextUrl() {
+		return contextUrl;
+	}
+	
 	public String toString() {
 		return thumbUrl;
 	}
+	
+
 /*
  * "GsearchResultClass":"GimageSearch",
 			"width":"200",
@@ -69,7 +83,6 @@ public class GoogleImageResult implements Serializable{
 			"tbUrl":"http://t3.gstatic.com/images?q\u003dtbn:ANd9GcRwoH362kEP74tLKIiDkXKUVOjcCSvyJj-YGwwsm18YwBMaj1US9KrYPeE"	
  */
 	
-//	public 
 	public static final List<GoogleImageResult> fromJSONArray(JSONArray imageResults) {
 		List<GoogleImageResult> images = new ArrayList<GoogleImageResult>();
 		try {

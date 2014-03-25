@@ -56,7 +56,7 @@ public class SearchActivity extends Activity {
 		
 		setGridViewListeners();
 		
-    	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext()).build();
+    	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getBaseContext()).build();
     	ImageLoader.getInstance().init(config);
 	}
 
@@ -132,7 +132,7 @@ public class SearchActivity extends Activity {
 	                // Add whatever code is needed to append new items to your AdapterView
 	           	Log.d("TEST - SearchActivity - customLoadMoreDataFromApi", page + " total items: " + totalItemsCount);
 	           	if(totalItemsCount >= 64) {
-	           		Toast.makeText(getApplicationContext(), "Max results retrieved", Toast.LENGTH_SHORT).show();
+	           		Toast.makeText(getBaseContext(), "Max results retrieved", Toast.LENGTH_SHORT).show();
 	           		return;
 	           	}
 	        	customLoadMoreDataFromApi(page, totalItemsCount); 
@@ -143,7 +143,7 @@ public class SearchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 				// TODO Auto-generated method stub
-				Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
+				Intent i = new Intent(getBaseContext(), ImageDisplayActivity.class);
 				GoogleImageResult image = imageAdapter.getItem(pos);
 				i.putExtra(IMAGE_EXTRA, image);
 				startActivity(i);//, SearchActivity.DISPLAY_IMAGE_REQUEST);				
